@@ -6,27 +6,24 @@ public class ARCursor : MonoBehaviour
     public ARPlaneManager planeManager;
     public Camera ARCamera;
     public GameObject cursorChildObject;
-    public GameObject gameSet;
-    public GameObject cube;
     public ARRaycastManager raycastManager;
     public bool placeSet = true;
+    public GameObject gameSetPrefab;
+    private GameObject gameSet;
+
+    public void Start()
+    {
+        gameSet = GameObject.Instantiate(gameSetPrefab);
+        gameSet.SetActive(false);
+    }
 
     public void Action()
     {
+        GameObject cube = gameSet.transform.Find("Cube").gameObject;
         if (placeSet)
         {
-/*            Rigidbody[] rigidBodies = gameSet.GetComponentsInChildren<Rigidbody>();
-            foreach (Rigidbody rb in rigidBodies)
-            {
-                rb.gameObject.transform.parent = null;
-            }*/
             gameSet.transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z);
             gameSet.transform.rotation = transform.rotation;
-/*            foreach (Rigidbody rb in rigidBodies)
-            {     
-                rb.MovePosition(gameSet.transform.position - transform.position);
-                rb.gameObject.transform.parent = gameSet.transform;
-            }*/
             gameSet.SetActive(true);
             placeSet = false;
             planeManager.SetTrackablesActive(false);
@@ -34,8 +31,6 @@ public class ARCursor : MonoBehaviour
         }
         else
         {
-            /*Vector3 position = new Vector3(transform.position.x, transform.position.y + cube.transform.localScale.y / 2, transform.position.z);
-            GameObject.Instantiate(cube, transform.position, transform.rotation, gameSet.transform);*/
             cube.transform.position = transform.position;
             cube.transform.rotation = transform.rotation;
             cube.transform.position += transform.rotation * new Vector3(0, cube.transform.localScale.y / 2, 0);
@@ -53,5 +48,12 @@ public class ARCursor : MonoBehaviour
             transform.position = hit.point;
             transform.rotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
         }
+    }
+
+    public void Reset()
+    {
+        Destroy(gameSet);
+        gameSet = GameObject.Instantiate(gameSetPrefab);
+        gameSet.SetActive(false);
     }
 }
